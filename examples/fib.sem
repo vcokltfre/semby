@@ -11,6 +11,9 @@ stc 1
   dup
   out
 
+  push 10
+  outc
+
   ldc
 
   dup
