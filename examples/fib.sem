@@ -1,0 +1,32 @@
+sta 15
+stb 0
+stc 1
+
+: loop
+  lda
+  jmpz end
+
+  ldb
+
+  dup
+  out
+
+  ldc
+
+  dup
+  std
+
+  add
+  stc
+
+  ldd
+  stb
+
+  push 1
+  lda
+  sub
+  sta
+
+  jmp loop
+
+: end
