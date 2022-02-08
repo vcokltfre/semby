@@ -26,7 +26,7 @@ def trace(code: bytearray, stack: list[int], registers: dict[int, int], memory: 
 
     Path("semby.trace").write_text(output)
 
-def execute(code: bytearray, memsize: int = 256) -> None:
+def execute(code: bytearray, memsize: int = 256, use_trace: bool = False) -> None:
     stack: list[int] = []
     registers: dict[int, int] = {}
     memory: list[int] = [0] * memsize
@@ -96,7 +96,8 @@ def execute(code: bytearray, memsize: int = 256) -> None:
             memory[loc_to] = memory[loc_from]
             ptr += 1
         elif instr == OpCode.TRC:
-            trace(code, stack, registers, memory)
+            if use_trace:
+                trace(code, stack, registers, memory)
             ptr += 1
         else:
             print("Invalid opcode: ", instr)
