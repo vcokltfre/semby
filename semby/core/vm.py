@@ -77,7 +77,7 @@ def execute(code: bytearray, memsize: int = 256, use_trace: bool = False) -> Non
             stack.append(stack.pop() % stack.pop())
             ptr += 1
         elif instr == OpCode.OUT:
-            print(stack.pop())
+            print(stack.pop(), end="")
             ptr += 1
         elif instr == OpCode.OUTC:
             print(chr(stack.pop()), end="")
