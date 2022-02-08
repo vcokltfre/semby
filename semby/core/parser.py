@@ -36,6 +36,7 @@ class OpCode(IntEnum):
     CPY = 0x42
 
     TRC = 0xF0
+    SRC = 0xF1
 
 
 @dataclass
@@ -53,6 +54,7 @@ class Jump:
 @dataclass
 class ParserOptions:
     strict_jumps: bool = True
+    source_mapped: bool = True
 
 
 SINGLE = {
@@ -93,6 +95,16 @@ def parse(code: str, file: str, options: ParserOptions = None) -> list[Instructi
     tokens = tokenise(code, file)
 
     for line in tokens:
+        if options.source_mapped:
+            data = bytearray()
+
+            data += int(line[0].line).to_bytes(4, "little")
+            data += len(line[0].file).to_bytes(4, "little")
+            data += bytes(line[0].file, "ascii")
+
+            instructions.append(Instruction(op=OpCode.SRC, data=data))
+            bcoffset += 1 + len(data)
+
         match line:
             case (Token(type="sym", value=":"), Token(type="id", value=x)):
                 if options.strict_jumps and x in jumps:
