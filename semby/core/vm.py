@@ -54,7 +54,7 @@ def execute(code: bytearray) -> None:
             print(stack.pop())
             ptr += 1
         elif instr == OpCode.OUTC:
-            print(chr(stack.pop()))
+            print(chr(stack.pop()), end="")
             ptr += 1
         else:
             print("Invalid opcode: ", instr)
