@@ -1,9 +1,10 @@
 from .parser import OpCode
 
 
-def execute(code: bytearray) -> None:
+def execute(code: bytearray, memsize: int = 256) -> None:
     stack: list[int] = []
     registers: dict[int, int] = {}
+    memory: list[int] = [0] * memsize
 
     ptr = 0
 
@@ -55,6 +56,14 @@ def execute(code: bytearray) -> None:
             ptr += 1
         elif instr == OpCode.OUTC:
             print(chr(stack.pop()), end="")
+            ptr += 1
+        elif instr == OpCode.MDP:
+            loc = stack.pop()
+            val = stack.pop()
+            memory[loc] = val
+            ptr += 1
+        elif instr == OpCode.MLD:
+            stack.append(memory[stack.pop()])
             ptr += 1
         else:
             print("Invalid opcode: ", instr)

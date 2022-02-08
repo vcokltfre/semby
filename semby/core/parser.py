@@ -31,6 +31,9 @@ class OpCode(IntEnum):
     OUT = 0x30
     OUTC = 0x31
 
+    MDP = 0x40
+    MLD = 0x41
+
 
 @dataclass
 class Instruction:
@@ -123,6 +126,12 @@ def parse(code: str, file: str, options: ParserOptions = None) -> list[Instructi
                 bcoffset += 1
             case (Token(type="id", value="outc"),):
                 instructions.append(Instruction(op=OpCode.OUTC, data=bytearray()))
+                bcoffset += 1
+            case (Token(type="id", value="mdp"),):
+                instructions.append(Instruction(op=OpCode.MDP, data=bytearray()))
+                bcoffset += 1
+            case (Token(type="id", value="mld"),):
+                instructions.append(Instruction(op=OpCode.MLD, data=bytearray()))
                 bcoffset += 1
 
     output = []
