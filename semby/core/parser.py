@@ -35,6 +35,8 @@ class OpCode(IntEnum):
     MLD = 0x41
     CPY = 0x42
 
+    TRC = 0xF0
+
 
 @dataclass
 class Instruction:
@@ -65,6 +67,7 @@ SINGLE = {
     "mdp": OpCode.MDP,
     "mld": OpCode.MLD,
     "cpy": OpCode.CPY,
+    "trc": OpCode.TRC,
 }
 
 JUMP = {

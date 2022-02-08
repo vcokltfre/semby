@@ -1,5 +1,30 @@
+from pathlib import Path
+
 from .parser import OpCode
 
+
+def trace(code: bytearray, stack: list[int], registers: dict[int, int], memory: list[int]) -> None:
+    output = "--- CODE ---\n"
+
+    for i in range(len(code) // 16 + 1):
+        output += " ".join([hex(ins)[2:].zfill(2) for ins in code[i * 16 : (i + 1) * 16]]) + "\n"
+
+    output += "\n--- STACK ---\n"
+
+    for item in stack:
+        output += str(item) + "\n"
+
+    output += "\n--- REGISTERS ---\n"
+
+    for key, value in registers.items():
+        output += f"{chr(96 + key)}: {value}\n"
+
+    output += "\n--- MEMORY ---\n"
+
+    for i in range(len(memory) // 16 + 1):
+        output += " ".join([hex(ins)[2:].zfill(2) for ins in memory[i * 16 : (i + 1) * 16]]) + "\n"
+
+    Path("semby.trace").write_text(output)
 
 def execute(code: bytearray, memsize: int = 256) -> None:
     stack: list[int] = []
@@ -69,6 +94,9 @@ def execute(code: bytearray, memsize: int = 256) -> None:
             loc_from = stack.pop()
             loc_to = stack.pop()
             memory[loc_to] = memory[loc_from]
+            ptr += 1
+        elif instr == OpCode.TRC:
+            trace(code, stack, registers, memory)
             ptr += 1
         else:
             print("Invalid opcode: ", instr)
