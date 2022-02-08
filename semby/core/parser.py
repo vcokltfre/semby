@@ -33,6 +33,7 @@ class OpCode(IntEnum):
 
     MDP = 0x40
     MLD = 0x41
+    CPY = 0x42
 
 
 @dataclass
@@ -50,6 +51,28 @@ class Jump:
 @dataclass
 class ParserOptions:
     strict_jumps: bool = True
+
+
+SINGLE = {
+    "dup": OpCode.DUP,
+    "add": OpCode.ADD,
+    "sub": OpCode.SUB,
+    "div": OpCode.DIV,
+    "mul": OpCode.MUL,
+    "mod": OpCode.MOD,
+    "out": OpCode.OUT,
+    "outc": OpCode.OUTC,
+    "mdp": OpCode.MDP,
+    "mld": OpCode.MLD,
+    "cpy": OpCode.CPY,
+}
+
+JUMP = {
+    "jmp": OpCode.JMP,
+    "jmpz": OpCode.JMPZ,
+    "jmpnz": OpCode.JMPNZ,
+    "jmpp": OpCode.JMPP,
+}
 
 
 def fail(reason: str, file: str, line: int) -> NoReturn:
@@ -88,50 +111,14 @@ def parse(code: str, file: str, options: ParserOptions = None) -> list[Instructi
                     )
                 )
                 bcoffset += 10
-            case (Token(type="id", value="dup"),):
-                instructions.append(Instruction(op=OpCode.DUP, data=bytearray()))
-                bcoffset += 1
             case (Token(type="id", value="push"), Token(type="num", value=y)):
                 instructions.append(Instruction(op=OpCode.PUSH, data=bytearray(int(y).to_bytes(8, "little"))))
                 bcoffset += 9
-            case (Token(type="id", value="jmp"), Token(type="id", value=x)):
-                instructions.append(Jump(op=OpCode.JMP, ref=x))
+            case (Token(type="id", value=x), Token(type="id", value=y)) if x in JUMP:
+                instructions.append(Jump(op=JUMP[x], ref=y))
                 bcoffset += 5
-            case (Token(type="id", value="jmpz"), Token(type="id", value=x)):
-                instructions.append(Jump(op=OpCode.JMPZ, ref=x))
-                bcoffset += 5
-            case (Token(type="id", value="jmpnz"), Token(type="id", value=x)):
-                instructions.append(Jump(op=OpCode.JMPNZ, ref=x))
-                bcoffset += 5
-            case (Token(type="id", value="jmpp"), Token(type="id", value=x)):
-                instructions.append(Jump(op=OpCode.JMPP, ref=x))
-                bcoffset += 5
-            case (Token(type="id", value="add"),):
-                instructions.append(Instruction(op=OpCode.ADD, data=bytearray()))
-                bcoffset += 1
-            case (Token(type="id", value="sub"),):
-                instructions.append(Instruction(op=OpCode.SUB, data=bytearray()))
-                bcoffset += 1
-            case (Token(type="id", value="div"),):
-                instructions.append(Instruction(op=OpCode.DIV, data=bytearray()))
-                bcoffset += 1
-            case (Token(type="id", value="mul"),):
-                instructions.append(Instruction(op=OpCode.MUL, data=bytearray()))
-                bcoffset += 1
-            case (Token(type="id", value="mod"),):
-                instructions.append(Instruction(op=OpCode.MOD, data=bytearray()))
-                bcoffset += 1
-            case (Token(type="id", value="out"),):
-                instructions.append(Instruction(op=OpCode.OUT, data=bytearray()))
-                bcoffset += 1
-            case (Token(type="id", value="outc"),):
-                instructions.append(Instruction(op=OpCode.OUTC, data=bytearray()))
-                bcoffset += 1
-            case (Token(type="id", value="mdp"),):
-                instructions.append(Instruction(op=OpCode.MDP, data=bytearray()))
-                bcoffset += 1
-            case (Token(type="id", value="mld"),):
-                instructions.append(Instruction(op=OpCode.MLD, data=bytearray()))
+            case (Token(type="id", value=x),) if x in SINGLE:
+                instructions.append(Instruction(op=SINGLE[x], data=bytearray()))
                 bcoffset += 1
 
     output = []

@@ -65,6 +65,11 @@ def execute(code: bytearray, memsize: int = 256) -> None:
         elif instr == OpCode.MLD:
             stack.append(memory[stack.pop()])
             ptr += 1
+        elif instr == OpCode.CPY:
+            loc_from = stack.pop()
+            loc_to = stack.pop()
+            memory[loc_to] = memory[loc_from]
+            ptr += 1
         else:
             print("Invalid opcode: ", instr)
             exit(1)

@@ -21,16 +21,16 @@ def compile(file: str, out: str = "out.smbc") -> None:
 
 
 @app.command(name="exec")
-def exec(file: str) -> None:
+def exec(file: str, memsize: int = 256) -> None:
     data = Path(file).read_bytes()
 
-    execute(bytearray(data))
+    execute(bytearray(data), memsize)
 
 
 @app.command(name="run")
-def run(file: str) -> None:
+def run(file: str, memsize: int = 256) -> None:
     data = Path(file).read_text()
 
     compiled = compile_bc(parse(data, file))
 
-    execute(compiled)
+    execute(compiled, memsize)
