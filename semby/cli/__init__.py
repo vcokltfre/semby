@@ -1,4 +1,5 @@
 from pathlib import Path
+from subprocess import Popen
 
 from typer import Typer, echo
 
@@ -30,10 +31,16 @@ def exec(file: str, memsize: int = 256, trace: bool = False, reraise: bool = Fal
 
 
 @app.command(name="run")
-def run(file: str, memsize: int = 256, trace: bool = False, reraise: bool = False, sourcemap: bool = True) -> None:
+def run(file: str, memsize: int = 256, trace: bool = False, reraise: bool = False, sourcemap: bool = True, vm: str = "default") -> None:
     data = Path(file).read_text()
     opts = ParserOptions(source_mapped=sourcemap)
 
     compiled = compile_bc(parse(data, file, opts))
 
-    execute(compiled, memsize, trace, reraise)
+    if vm == "default":
+        execute(compiled, memsize, trace, reraise)
+    elif vm == "gosemby":
+        Path("/tmp/semby.smbc").write_bytes(compiled)
+        Popen(["gosemby", "/tmp/semby.smbc"])
+    else:
+        raise ValueError(f"Unknown VM: {vm}")
